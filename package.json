@@ -1,0 +1,18 @@
+{
+  "name": "spotify-token-server",
+  "version": "1.0.0",
+  "description": "Spotify token authentication server for Hitster game",
+  "main": "spotify-token-server.js",
+  "scripts": {
+    "start": "node spotify-token-server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
+
