@@ -96,7 +96,7 @@ app.get('/', (req, res) => {
 
 // Health check endpoint - returns 200 OK
 app.get('/health', (req, res) => {
-    res.json({status: 'OK', message: 'Server is healthy and running'});
+    res.json({ status: 'OK', message: 'Server is healthy and running' });
 });
 
 // Login route - redirects to Spotify authorization
@@ -229,6 +229,38 @@ app.get('/spotify-token', async (req, res) => {
 
     // Return the current access token
     res.json({access_token: tokenData.access_token});
+});
+
+// Spotify search token endpoint - provides a client credentials token for searches
+app.get('/spotify-search-token', async (req, res) => {
+    try {
+        // Get a client credentials token (different from user auth flow)
+        const tokenResponse = await axios({
+            method: 'post',
+            url: 'https://accounts.spotify.com/api/token',
+            params: {
+                grant_type: 'client_credentials'
+            },
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        if (tokenResponse.status === 200) {
+            // Return just the access token and expiration
+            return res.json({
+                access_token: tokenResponse.data.access_token,
+                expires_in: tokenResponse.data.expires_in
+            });
+        } else {
+            console.error('Client credentials token exchange failed:', tokenResponse.data);
+            return res.status(500).json({ error: 'Failed to get search token' });
+        }
+    } catch (error) {
+        console.error('Error getting client credentials token:', error.response?.data || error.message);
+        return res.status(500).json({ error: 'Token exchange error' });
+    }
 });
 
 // Start the server
